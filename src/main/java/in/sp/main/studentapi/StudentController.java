@@ -1,47 +1,36 @@
 package in.sp.main.studentapi;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
+@RequestMapping("/students")
 public class StudentController {
 	
-	public List<Student> students= new ArrayList<>();
+@Autowired
+private StudentRepository repo;
 	
-	@GetMapping("/students")
+	@GetMapping
 	public List<Student> getAllStudents() {
-		return students;
+		return repo.findAll();
 	}
-	@PostMapping("/addStudent")
-	public String addStudent(@RequestBody Student student) {
-		students.add(student);
-	
-		return "Student added :"+student.getName()+"-"+student.getCourse();
+	@PostMapping
+	public Student addStudent(@RequestBody Student student) {
+		return repo.save(student);
+		
 	}
-
-		@DeleteMapping("/deleteStudent/{name}")
-		public String deleteStudent(@PathVariable String name) {
-		return "name " + name + " delete ho gaya";
+		@DeleteMapping("/{id}")
+		public String deleteStudent(@PathVariable Long id) {
+			repo.deleteById(id);
+		return "student deleted with id :" +id;
 }
-		@PutMapping("/updateStudent/{name}")
-
-		public String updateStudent(@PathVariable String name,@RequestBody Student updatedStudent) {
-			for(Student s:students) {
-				if(s.getName().equals(name)) {
-					s.setCourse(updatedStudent.getCourse());
-					return "student updated :"+ name+ "->"+updatedStudent.getCourse();
-				}
-			}
-				return "studnet not found "+name;
-					
+		@PutMapping("/{id}")
+		public Student updateStudent(@PathVariable Long id,@RequestBody Student updatedStudent) {
+			updatedStudent.setId(id);
+				return repo.save(updatedStudent);	
 				}
 			}
 
